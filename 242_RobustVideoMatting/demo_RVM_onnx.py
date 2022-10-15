@@ -19,13 +19,31 @@ def run_inference(onnx_session, input_size, image):
     input_image = input_image.transpose(2, 0, 1).astype(np.float32)
     input_image = np.expand_dims(input_image, axis=0)
 
-    # rec = [np.zeros([1, 1, 1, 1], dtype=np.float32)] * 4
+    # rec = [np.zeros([1, 1, 1, 1], dtype=np.float16)] * 4
+
+    # 240x320
     rec = [
         np.zeros([1, 16, 120, 160], dtype=np.float32),
         np.zeros([1, 20, 60, 80], dtype=np.float32),
         np.zeros([1, 40, 30, 40], dtype=np.float32),
         np.zeros([1, 64, 15, 20], dtype=np.float32),
     ]
+
+    # 480x640
+    # rec = [
+    #     np.zeros([1, 16, 240, 320], dtype=np.float32),
+    #     np.zeros([1, 20, 120, 160], dtype=np.float32),
+    #     np.zeros([1, 40, 60, 80], dtype=np.float32),
+    #     np.zeros([1, 64, 30, 40], dtype=np.float32),
+    # ]
+
+    # 720x1280
+    # rec = [
+    #     np.zeros([1, 16, 360, 640], dtype=np.float32),
+    #     np.zeros([1, 20, 180, 320], dtype=np.float32),
+    #     np.zeros([1, 40, 90, 160], dtype=np.float32),
+    #     np.zeros([1, 64, 45, 80], dtype=np.float32),
+    # ]
 
     downsample_ratio = np.array([0.25], dtype=np.float32)
 
@@ -51,7 +69,6 @@ def run_inference(onnx_session, input_size, image):
 
     # result = onnx_session.run([output_name], {input_name: input_image})
     # result = onnx_session.run([output_name], inputsObj)
-    # result = onnx_session.run([output_name], inputsObj)
     result = onnx_session.run(outputs, inputsObj)
 
     # Post process:squeeze
@@ -73,11 +90,15 @@ def main():
         type=str,
         # default='demo/rvm_mobilenetv3_fp16.onnx',
         default='demo/rvm_mobilenetv3_240x320/rvm_mobilenetv3_240x320.onnx',
+        # default='demo/rvm_mobilenetv3_480x640/rvm_mobilenetv3_480x640.onnx',
+        # default='demo/rvm_mobilenetv3_720x1280/rvm_mobilenetv3_720x1280.onnx',
     )
     parser.add_argument(
         "--input_size",
         type=str,
         default='240,320',
+        # default='480,640',
+        # default='720,1280',
     )
 
     args = parser.parse_args()
