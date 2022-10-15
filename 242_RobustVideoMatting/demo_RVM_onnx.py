@@ -32,7 +32,13 @@ def run_inference(onnx_session, input_size, image):
     # Inference
     # input_name = onnx_session.get_inputs()[0].name
 
+    output_name = onnx_session.get_outputs()
+
     output_name = onnx_session.get_outputs()[0].name
+
+    outputs = []
+    for item in onnx_session.get_outputs():
+        outputs.append(item.name)
 
     inputsObj = {
         'src': input_image,
@@ -44,10 +50,13 @@ def run_inference(onnx_session, input_size, image):
     }
 
     # result = onnx_session.run([output_name], {input_name: input_image})
-    result = onnx_session.run([output_name], inputsObj)
+    # result = onnx_session.run([output_name], inputsObj)
+    # result = onnx_session.run([output_name], inputsObj)
+    result = onnx_session.run(outputs, inputsObj)
 
     # Post process:squeeze
-    mask = result[0]
+    # mask = result[0] # fgr
+    mask = result[1]  # pha
     mask = np.squeeze(mask)
 
     return mask
